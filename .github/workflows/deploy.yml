@@ -3,47 +3,37 @@ name: Deploy Hexo to GitHub Pages
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # Позволяет запускать вручную из UI
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
     permissions:
-      contents: write  # Нужно для деплоя
+      contents: write
     
     steps:
-
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        submodules: true  # Важно для тем как submodule
-        fetch-depth: 0
+      # НЕТ submodules: true!
     
-
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
         cache: 'npm'
     
-
     - name: Install dependencies
-      run: |
-        npm install
-        npm install hexo-cli -g
+      run: npm ci
     
-
-    - name: Generate site
+    - name: Build
       run: |
-        hexo clean
-        hexo generate
-    
+        npx hexo clean
+        npx hexo generate
     
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./public
-        publish_branch: main  
-        force_orphan: true    
+        publish_branch: main
+        force_orphan: true

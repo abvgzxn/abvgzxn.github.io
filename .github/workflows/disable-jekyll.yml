@@ -1,0 +1,21 @@
+name: Disable Jekyll on GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  disable-jekyll:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Create .nojekyll
+      run: |
+        echo "Disabling Jekyll processing" > .nojekyll
+        git add .nojekyll
+        git config user.email "actions@github.com"
+        git config user.name "GitHub Actions"
+        git commit -m "Add .nojekyll to disable Jekyll" || echo "No changes"
+        git push
